@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TERRAFORM_DIR="$ROOT_DIR/terraform"
+
+PROJECT="${PROJECT:-intentional}"
+ENVIRONMENT="${ENVIRONMENT:-dev}"
+AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_PROFILE="${AWS_PROFILE:-intentional}"
+
+log() { echo "[$(date -u +%H:%M:%S)] $*"; }
+
+log "Tearing down $PROJECT/$ENVIRONMENT in $AWS_REGION..."
+
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile "$AWS_PROFILE" --query Account --output text)
+STATE_BUCKET="${PROJECT}-terraform-state-${AWS_ACCOUNT_ID}"
+LOCK_TABLE="${PROJECT}-terraform-locks"
+
+cd "$TERRAFORM_DIR"
+
+# Regenerate backend.tf in case it's missing from a fresh clone
+cat > backend.tf <<BACKENDEOF
+terraform {
+  backend "s3" {
+    bucket         = "${STATE_BUCKET}"
+    key            = "${PROJECT}/${ENVIRONMENT}/terraform.tfstate"
+    region         = "${AWS_REGION}"
+    dynamodb_table = "${LOCK_TABLE}"
+    encrypt        = true
+  }
+}
+BACKENDEOF
+
+terraform init -reconfigure 2>&1 | tail -5
+
+# Scale ECS service to 0 before destroy to avoid dependency conflicts
+CLUSTER=$(terraform output -raw ecs_cluster_name 2>/dev/null || true)
+SERVICE=$(terraform output -raw ecs_service_name 2>/dev/null || true)
+
+if [ -n "$CLUSTER" ] && [ -n "$SERVICE" ]; then
+  log "Scaling ECS service to 0..."
+  aws ecs update-service \
+    --cluster "$CLUSTER" \
+    --service "$SERVICE" \
+    --desired-count 0 \
+    --profile "$AWS_PROFILE" \
+    --region "$AWS_REGION" >/dev/null 2>&1 || true
+  # Brief wait for tasks to drain
+  sleep 15
+fi
+
+log "Running terraform destroy..."
+terraform destroy -auto-approve \
+  -var="project=${PROJECT}" \
+  -var="environment=${ENVIRONMENT}" \
+  -var="aws_region=${AWS_REGION}" \
+  -var="app_image=placeholder" \
+  -var-file="environments/dev/terraform.tfvars"
+
+# Remove generated backend.tf so repo stays clean
+rm -f backend.tf
+
+# Optional: purge the state backend itself (removes all Terraform history)
+if [ "${1:-}" = "--purge-state" ]; then
+  log "Purging state backend..."
+  aws s3 rb "s3://${STATE_BUCKET}" --force --profile "$AWS_PROFILE" 2>/dev/null || \
+    log "Warning: could not remove state bucket (may already be gone)"
+  aws dynamodb delete-table \
+    --table-name "$LOCK_TABLE" \
+    --profile "$AWS_PROFILE" \
+    --region "$AWS_REGION" 2>/dev/null || \
+    log "Warning: could not remove lock table (may already be gone)"
+fi
+
+log "Teardown complete. No resources remain."

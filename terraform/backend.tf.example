@@ -1,0 +1,19 @@
+# This file is NOT committed. The ./up script generates it at bootstrap time.
+# It is injected via: terraform init -backend-config=backend.tf
+#
+# To generate manually (replace ACCOUNT_ID and PROJECT/ENV as appropriate):
+#
+#   cat > terraform/backend.tf <<EOF
+#   terraform {
+#     backend "s3" {
+#       bucket         = "intentional-dev-tfstate-ACCOUNT_ID"
+#       key            = "intentional/dev/terraform.tfstate"
+#       region         = "us-east-1"
+#       encrypt        = true
+#       dynamodb_table = "intentional-dev-tfstate-lock"
+#     }
+#   }
+#   EOF
+#
+# The S3 bucket and DynamoDB table are created by scripts/bootstrap-state.sh
+# before terraform init is called.

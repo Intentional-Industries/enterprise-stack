@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ACCEPTANCE_DIR="$ROOT_DIR/acceptance"
+
+log() { echo "[$(date -u +%H:%M:%S)] $*"; }
+
+[ -n "${APP_URL:-}" ] || { echo "ERROR: APP_URL must be set (e.g. APP_URL=https://xxx.cloudfront.net ./test)"; exit 1; }
+
+log "Running V1 acceptance tests against $APP_URL"
+
+cd "$ACCEPTANCE_DIR"
+
+# Install test dependencies if not already present
+if [ ! -d node_modules ]; then
+  log "Installing test dependencies..."
+  npm ci
+  npx playwright install chromium --with-deps
+fi
+
+# Run Playwright suite
+APP_URL="$APP_URL" \
+  AWS_PROFILE="${AWS_PROFILE:-intentional}" \
+  AWS_REGION="${AWS_REGION:-us-east-1}" \
+  COGNITO_USER_POOL_ID="${COGNITO_USER_POOL_ID:-}" \
+  DB_SECRET_ARN="${DB_SECRET_ARN:-}" \
+  ECS_CLUSTER="${ECS_CLUSTER:-}" \
+  npx playwright test --reporter=list,html
+
+EXIT_CODE=$?
+log "Test artifacts saved to $ACCEPTANCE_DIR/playwright-report"
+exit $EXIT_CODE
