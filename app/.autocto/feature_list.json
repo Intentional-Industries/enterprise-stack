@@ -1,0 +1,31 @@
+{
+  "autocto_commit": "",
+  "run_id": "cmr4s87gw00048ojsp9iizj0s",
+  "generated_at": "2026-07-03T10:22:37.895Z",
+  "features": [
+    {
+      "id": "cmr4s98u400068ojsnhktzfr7",
+      "order": 1,
+      "category": "ui",
+      "title": "Update root layout header with blue-to-grey gradient",
+      "description": "Modify the header element in src/app/layout.tsx to apply a top-to-bottom gradient from blue to grey using Tailwind CSS gradient utilities (e.g., from-blue-600 via-blue-400 to-gray-400 or similar). Ensure the 'Intentional Industries' text remains visible with appropriate text color contrast against the gradient background.",
+      "acceptanceCriteria": [
+        "File src/app/layout.tsx contains a header element with Tailwind gradient classes (bg-gradient-to-b and color stops)",
+        "The gradient classes include 'from-' prefix with a blue shade and 'to-' prefix with a grey shade",
+        "The header text 'Intentional Industries' is present in the modified header",
+        "Running 'npm run build' completes successfully without TypeScript or build errors",
+        "Opening the application in a browser shows a visible gradient in the header area transitioning from blue (top) to grey (bottom)"
+      ],
+      "dependsOn": [],
+      "complexity": "LOW",
+      "estimatedSteps": 2,
+      "affectedAreas": [
+        "src/app/layout.tsx"
+      ],
+      "passes": false,
+      "attempts": 2,
+      "failureReason": "Generator crashed: prompt is too long: 207487 tokens > 200000 maximum",
+      "commitSha": null
+    }
+  ]
+}
