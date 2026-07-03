@@ -1,8 +1,61 @@
 # Intentional Enterprise Stack
 
-Regulated-enterprise-grade Next.js web application on AWS. Full network segregation, HA, complete IaC. Stands up with `./up`, tears down completely with `./down`.
+**A batteries-included, enterprise-ready AWS foundation for any web app.**
 
-## Architecture
+Most teams that need to ship a regulated-enterprise-grade web app end up
+rebuilding the same thing from scratch: a segregated VPC, a WAF-fronted CDN,
+an encrypted multi-AZ database, a managed identity provider, and all the
+IAM/KMS/logging plumbing an auditor is going to ask about — before they've
+written a single feature. This repo is that foundation, already built,
+wired together, and provable: `./up` stands up the entire stack on AWS from
+nothing, and `./down` tears it back down to nothing, with no orphaned
+resources either way.
+
+It ships with a minimal Next.js app (a DB-backed page and a Cognito
+sign-up/sign-in flow) as a working reference — swap in your own app and the
+infrastructure underneath it doesn't need to change.
+
+## Why this exists
+
+Security and compliance requirements for enterprise web apps are largely the
+same from company to company — network segregation, encryption at rest and
+in transit, centralised audit logging, least-privilege IAM, managed auth —
+but they're expensive to get right and easy to get subtly wrong. Encoding
+them once, as infrastructure-as-code with an acceptance suite that proves
+they actually work, means every app built on top starts from "compliant by
+default" instead of "compliant eventually, maybe."
+
+## What's included
+
+| Concern | How it's handled |
+|---|---|
+| **Network isolation** | 3-tier VPC (public / private / data); app runs in private subnets with no public IP |
+| **Edge & DDoS/WAF** | CloudFront + AWS WAF (Common, KnownBadInputs, SQLi managed rule sets) |
+| **Compute** | ECS Fargate, autoscaling-ready, pulls from a scanned ECR repo |
+| **Database** | RDS PostgreSQL, Multi-AZ, encrypted with a customer-managed KMS key |
+| **Identity** | AWS Cognito user pool + client (JWT-based sessions) |
+| **Secrets** | AWS Secrets Manager, RDS credentials auto-rotated |
+| **Observability** | CloudWatch Logs, AWS Config continuous compliance evaluation |
+| **Audit trail** | S3 bucket with Object Lock in COMPLIANCE mode (immutable) |
+| **IaC** | Modular Terraform, one command up, one command down, idempotent |
+| **Local dev** | `./dev` — the same app, running against Docker Postgres + a local Cognito emulator, no AWS required |
+
+## Two ways to run it
+
+**Iterating on the app itself?** You don't need AWS for that. `./dev` gives
+you the Next.js app with hot-reload, a local Postgres, and a local Cognito
+emulator (so sign-up/sign-in work too) — everything running in Docker on
+your machine. See **[LOCAL_DEV.md](LOCAL_DEV.md)**.
+
+**Need the real thing — CloudFront, WAF, real Cognito, the full compliance
+posture?** That's `./up`, below. It provisions actual AWS resources and
+costs actual money while it's running; `./down` cleans it up completely.
+
+Use local dev for day-to-day feature work and debugging; use the full stack
+to validate anything that depends on the infrastructure itself (auth against
+real Cognito, edge/WAF behavior, the acceptance suite).
+
+## Architecture (full stack)
 
 ```
 Internet
@@ -49,6 +102,8 @@ Cross-cutting:
 
 Run `./scripts/check-prereqs.sh` to verify all tools are present.
 
+(Local dev via `./dev` only needs Docker and Node — see [LOCAL_DEV.md](LOCAL_DEV.md).)
+
 ## AWS Setup
 
 Configure an AWS CLI profile called `intentional` with credentials for account `992382611473`:
@@ -62,10 +117,13 @@ The IAM user/role needs permissions to create all resources in the stack (VPC, E
 ## Quick Start
 
 ```bash
-git clone git@github-intentional:HowardIntentional/enterprise-stack.git
+git clone https://github.com/Intentional-Industries/enterprise-stack.git
 cd enterprise-stack
 ./up
 ```
+
+Just want to run the app locally (Next.js + Postgres + Cognito emulator, no AWS)? See
+[LOCAL_DEV.md](LOCAL_DEV.md) — `./dev` gets you there in one command.
 
 `./up` performs in order:
 1. Prerequisite checks
@@ -134,13 +192,32 @@ Test artefacts (screenshots, HTML report) are saved to `acceptance/playwright-re
 - `force_destroy = true` on S3 buckets
 - `deletion_protection = false` on RDS
 
+## Adapting this for your own app
+
+The infrastructure doesn't know or care what's in `app/` — it builds
+whatever `app/Dockerfile` produces and points ECS at it. To bring your own
+app:
+
+1. Replace `app/` with your own service (keep a `Dockerfile` that produces a
+   container listening on the port ECS expects, and a `/api/health`-style
+   endpoint for the ALB health check).
+2. Point `app/scripts/migrate.js` (or your own migration runner) at your own
+   `migrations/`.
+3. Adjust `terraform/variables.tf` / `environments/dev/terraform.tfvars` for
+   naming, sizing, and region.
+4. Everything else — VPC, WAF, Cognito, KMS, Secrets Manager, CloudWatch,
+   Config, the audit bucket — carries over unchanged.
+
 ## Repository Structure
 
 ```
 enterprise-stack/
 ├── up                        One-command stand-up
 ├── down                      One-command teardown
+├── dev                       One-command local dev (app + DB + Cognito emulator, no AWS)
 ├── test                      Run acceptance suite
+├── docker-compose.yml        Local Postgres + cognito-local for ./dev
+├── LOCAL_DEV.md              Local development guide
 ├── terraform/
 │   ├── main.tf               Root module — calls all child modules
 │   ├── variables.tf          Input variables
@@ -170,7 +247,7 @@ enterprise-stack/
 └── README.md
 ```
 
-## V2 Roadmap
+## Roadmap
 
 After V1 is accepted, populate `intentional/external-services` in Secrets Manager (created empty by `./up`), then V2 adds:
 

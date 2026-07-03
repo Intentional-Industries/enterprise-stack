@@ -1,0 +1,137 @@
+{
+  "autocto_commit": "53684202365b34ae6b0a3182e3dd733402e7ed8a",
+  "run_id": "cmr3d6krb0000yexm99p051yd",
+  "generated_at": "2026-07-02T10:31:57.188Z",
+  "features": [
+    {
+      "id": "cmr3d7ies0002yexmus148kwl",
+      "order": 1,
+      "category": "ui",
+      "title": "Update header text in Next.js layout or landing page",
+      "description": "Locate the component responsible for rendering the header text (likely `app/src/app/layout.tsx` or `app/src/app/page.tsx`) and change the header text to 'Intentional Industries'. Ensure the change is visible in the UI and does not break existing functionality.",
+      "acceptanceCriteria": [
+        "The text 'Intentional Industries' appears in the header of the application",
+        "Running `grep -r 'Intentional Industries' app/src/app/` returns at least one match",
+        "The application builds successfully with `cd app && npm run build` (exit code 0)",
+        "No TypeScript compilation errors when running `cd app && npx tsc --noEmit`",
+        "The layout remains structurally intact (no broken HTML or missing elements)"
+      ],
+      "dependsOn": [],
+      "complexity": "LOW",
+      "estimatedSteps": 2,
+      "affectedAreas": [
+        "app/src/app/layout.tsx",
+        "app/src/app/page.tsx"
+      ],
+      "passes": false,
+      "attempts": 0,
+      "failureReason": null,
+      "commitSha": null
+    },
+    {
+      "id": "cmr3d7ieu0004yexm71fd8dcq",
+      "order": 2,
+      "category": "build",
+      "title": "Rebuild Docker image with updated header text",
+      "description": "Build a new Docker image containing the header text change using the existing multi-stage Dockerfile. Tag the image appropriately for pushing to ECR. Verify the build completes without errors and the image contains the updated code.",
+      "acceptanceCriteria": [
+        "Running `docker build -t test-header-change:latest app/` completes with exit code 0",
+        "The Docker image is created and visible in `docker images` output",
+        "Starting a container from the image with `docker run -p 3000:3000 test-header-change:latest` serves the application",
+        "The build process completes in under 10 minutes"
+      ],
+      "dependsOn": [
+        "cmr3d7ies0002yexmus148kwl"
+      ],
+      "complexity": "LOW",
+      "estimatedSteps": 2,
+      "affectedAreas": [
+        "app/Dockerfile"
+      ],
+      "passes": false,
+      "attempts": 0,
+      "failureReason": null,
+      "commitSha": null
+    },
+    {
+      "id": "cmr3d7iev0006yexm9b6ayk77",
+      "order": 3,
+      "category": "deployment",
+      "title": "Deploy updated application to AWS infrastructure",
+      "description": "Push the newly built Docker image to ECR and trigger a redeployment of the ECS service. This can be done by running the full `./up` script or manually pushing to ECR and updating the ECS task definition. Wait for the deployment to stabilize and the health checks to pass.",
+      "acceptanceCriteria": [
+        "Running `./up` completes successfully with exit code 0",
+        "The ECS service shows 'RUNNING' status with desired count matching running count",
+        "The ALB target group health check returns 'healthy' status",
+        "CloudWatch logs for the ECS task show the application started without errors",
+        "The deployment completes within 15 minutes"
+      ],
+      "dependsOn": [
+        "cmr3d7ieu0004yexm71fd8dcq"
+      ],
+      "complexity": "MEDIUM",
+      "estimatedSteps": 4,
+      "affectedAreas": [
+        "terraform/",
+        "app/"
+      ],
+      "passes": false,
+      "attempts": 0,
+      "failureReason": null,
+      "commitSha": null
+    },
+    {
+      "id": "cmr3d7iew0008yexmkinqw9o5",
+      "order": 4,
+      "category": "verification",
+      "title": "Verify header text change in live deployment",
+      "description": "Access the deployed application via the CloudFront URL and verify that the header text now reads 'Intentional Industries'. Check both the homepage and any other pages that display the header. Capture a screenshot or use curl to verify the HTML contains the expected text.",
+      "acceptanceCriteria": [
+        "Running `curl -s $(terraform -chdir=terraform output -raw cloudfront_url) | grep 'Intentional Industries'` returns a match",
+        "Manually accessing the CloudFront URL in a browser shows 'Intentional Industries' in the header",
+        "The homepage (`/`) displays the header text correctly",
+        "The profile page (`/profile`) displays the same header text",
+        "No console errors appear in the browser developer tools"
+      ],
+      "dependsOn": [
+        "cmr3d7iev0006yexm9b6ayk77"
+      ],
+      "complexity": "LOW",
+      "estimatedSteps": 3,
+      "affectedAreas": [
+        "app/src/app/"
+      ],
+      "passes": false,
+      "attempts": 0,
+      "failureReason": null,
+      "commitSha": null
+    },
+    {
+      "id": "cmr3d7iey000ayexmp4tpldxr",
+      "order": 5,
+      "category": "testing",
+      "title": "Run acceptance test suite to ensure no regressions",
+      "description": "Execute the full Playwright acceptance test suite (`./test`) to verify that the header text change has not broken any existing functionality. All 5 tests (homepage, API, signup, signin, profile) should pass. If any tests fail due to the header change, update the test expectations accordingly.",
+      "acceptanceCriteria": [
+        "Running `./test` completes with exit code 0",
+        "All 5 tests in `acceptance/specs/v1-acceptance.spec.ts` pass",
+        "No new test failures are introduced by the header change",
+        "The test output shows 'All tests passed' or equivalent success message",
+        "Test screenshots in `acceptance/screenshots/` show the updated header text"
+      ],
+      "dependsOn": [
+        "cmr3d7iew0008yexmkinqw9o5"
+      ],
+      "complexity": "LOW",
+      "estimatedSteps": 2,
+      "affectedAreas": [
+        "acceptance/specs/v1-acceptance.spec.ts",
+        "acceptance/playwright.config.ts"
+      ],
+      "passes": false,
+      "attempts": 0,
+      "failureReason": null,
+      "commitSha": null
+    }
+  ]
+}

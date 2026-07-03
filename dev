@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Local development: Next.js app + a minimal Postgres container. No AWS required.
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_DIR="$ROOT_DIR/app"
+
+log() { echo "[$(date -u +%H:%M:%S)] $*"; }
+
+log "Checking prerequisites..."
+for cmd in docker node npm; do
+  command -v "$cmd" >/dev/null || { echo "ERROR: $cmd not found"; exit 1; }
+done
+docker compose version >/dev/null 2>&1 || { echo "ERROR: 'docker compose' not available"; exit 1; }
+
+# ── 1. Local env file ─────────────────────────────────────────────────────────
+if [ ! -f "$APP_DIR/.env.local" ]; then
+  log "Creating app/.env.local from .env.local.example..."
+  cp "$APP_DIR/.env.local.example" "$APP_DIR/.env.local"
+fi
+
+set -a
+# shellcheck disable=SC1091
+source "$APP_DIR/.env.local"
+set +a
+
+# ── 2. Start Postgres + cognito-local ─────────────────────────────────────────
+log "Starting Postgres and cognito-local (docker compose)..."
+docker compose -f "$ROOT_DIR/docker-compose.yml" up -d db cognito
+
+log "Waiting for Postgres to be healthy..."
+until [ "$(docker compose -f "$ROOT_DIR/docker-compose.yml" ps -q db | xargs docker inspect -f '{{.State.Health.Status}}')" = "healthy" ]; do
+  sleep 1
+done
+
+# ── 3. Install app dependencies ───────────────────────────────────────────────
+cd "$APP_DIR"
+if [ ! -d node_modules ]; then
+  log "Installing app dependencies..."
+  npm install
+fi
+
+# ── 4. Run migrations ──────────────────────────────────────────────────────────
+log "Running database migrations..."
+npm run migrate
+
+# ── 5. Provision the local Cognito user pool (no-op if COGNITO_ENDPOINT unset) ─
+log "Provisioning cognito-local user pool..."
+npm run cognito:setup
+
+set -a
+# shellcheck disable=SC1091
+source "$APP_DIR/.env.local"
+set +a
+
+# ── 6. Start the app ──────────────────────────────────────────────────────────
+# next dev defaults to :3000 and automatically tries the next port (3001, 3002, ...)
+# if it's taken — watch the "Local:" line below for the port actually in use.
+log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+log "Starting Next.js dev server..."
+log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+exec npm run dev

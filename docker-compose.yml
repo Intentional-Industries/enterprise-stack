@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-intentional}
+      POSTGRES_USER: ${DB_USERNAME:-intentional_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U ${DB_USERNAME:-intentional_admin} -d ${DB_NAME:-intentional}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  cognito:
+    image: jagregory/cognito-local:latest
+    restart: unless-stopped
+    ports:
+      - "${COGNITO_PORT:-9229}:9229"
+    volumes:
+      - cognito-data:/app/.cognito
+
+volumes:
+  db-data:
+  cognito-data:

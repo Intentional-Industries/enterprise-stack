@@ -1,0 +1,12 @@
+{
+  "commitSha": "53684202365b34ae6b0a3182e3dd733402e7ed8a",
+  "install": null,
+  "start": null,
+  "port": null,
+  "healthCheck": null,
+  "confidence": "low",
+  "workdir": null,
+  "requiredEnvVars": [],
+  "lastVerified": "2026-07-02T15:34:23.665Z",
+  "lastError": "Could not determine install/start commands with enough confidence to verify the app runs."
+}

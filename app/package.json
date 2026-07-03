@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "migrate": "node scripts/migrate.js"
+    "migrate": "node scripts/migrate.js",
+    "cognito:setup": "node scripts/cognito-local-setup.js"
   },
   "dependencies": {
     "next": "^15.3.0",

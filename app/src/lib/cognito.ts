@@ -7,8 +7,14 @@ import {
   AuthenticationResultType,
 } from '@aws-sdk/client-cognito-identity-provider'
 
+// COGNITO_ENDPOINT points at cognito-local for local dev (see LOCAL_DEV.md);
+// unset in every deployed environment, where it falls through to real AWS Cognito.
+const endpoint = process.env.COGNITO_ENDPOINT
 const client = new CognitoIdentityProviderClient({
   region: process.env.AWS_REGION ?? 'us-east-1',
+  ...(endpoint
+    ? { endpoint, credentials: { accessKeyId: 'local', secretAccessKey: 'local' } }
+    : {}),
 })
 
 const USER_POOL_ID = process.env.COGNITO_USER_POOL_ID!
