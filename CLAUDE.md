@@ -1,6 +1,6 @@
 ---
-autocto_commit: f0ebfe445bea61b33d552e74d9ac5adede73f87b
-autocto_generated: 2026-07-06T10:09:41.885Z
+autocto_commit: ef36b717d011b204e8145ee8edecfc7a211df450
+autocto_generated: 2026-07-06T10:22:55.178Z
 ---
 
 # CLAUDE.md
@@ -73,9 +73,9 @@ A production-grade Next.js 14 web application deployed on AWS using infrastructu
 │   │   │   ├── signin/page.tsx
 │   │   │   └── signup/page.tsx
 │   │   ├── profile/page.tsx        # Protected: displays Cognito sub/email
-│   │   ├── layout.tsx
+│   │   ├── layout.tsx              # Root layout with header (nav with "Intentional Industries" text, white font, gradient background)
 │   │   ├── not-found.tsx
-│   │   └── globals.css
+│   │   └── globals.css             # Global styles including header styles (.site-header, .site-title with white color and gradient)
 │   ├── src/lib/
 │   │   ├── db.ts           # PostgreSQL connection pool (reads credentials from env or Secrets Manager)
 │   │   ├── cognito.ts      # AWS SDK v3 CognitoIdentityProvider client (points at cognito-local if COGNITO_ENDPOINT set)
@@ -158,6 +158,12 @@ A production-grade Next.js 14 web application deployed on AWS using infrastructu
 
 ## Key Conventions & Constraints
 
+### Header Styling (Current State)
+- **Header text**: Displays "Intentional Industries" in `app/src/app/layout.tsx` (line 24, nav element with className="brand")
+- **Font color**: White (`color: white` in `.site-header` and `color: #ffffff` in `.site-title`)
+- **Background**: Horizontal gradient `linear-gradient(to right, #000000, #001f3f)` on `.site-header` (black to navy blue)
+- **CSS location**: All header styles defined in `app/src/app/globals.css` (lines 41-48)
+
 ### AWS-specific
 - **Network segregation**: App runs in private subnets; no direct internet access. VPC endpoints (`ecr.dkr`, `logs`, `secretsmanager`) allow AWS API calls without NAT traversal.
 - **CloudFront ↔ ALB authentication**: ALB security group + custom header check (`X-CloudFront-Secret`) ensures ALB only accepts CloudFront traffic. CloudFront uses default `*.cloudfront.net` TLS cert (V1).
@@ -187,27 +193,11 @@ A production-grade Next.js 14 web application deployed on AWS using infrastructu
 - **Test isolation**: E2E smoke test is minimal and doesn't require authentication; acceptance suite performs full user flows
 - **data-testid convention**: All interactive UI elements should have `data-testid` attributes for reliable test targeting
 - **Evaluator-generated tests**: Files in `e2e/tasks/` are immutable verification tests created by the AutoCTO evaluator to validate task completion. Do not modify these files; fix implementation if tests fail.
+- **Task verification tests**: Current evaluator-generated tests in `e2e/tasks/` include:
+  - `task-01-update-header-text-to-intentional-industries.spec.ts`: Verifies header text is "Intentional Industries"
+  - `task-02-apply-white-font-color-to-header.spec.ts`: Verifies header has white font color
+  - `task-03-add-horizontal-gradient-background-to-header.spec.ts`: Verifies header has black-to-navy gradient background
 
 ### Shared conventions
 - **DB connection pooling**: `lib/db.ts` uses `pg.Pool` with max 10 (local) or 20 (AWS) connections. Connection string constructed from env vars (local) or Secrets Manager (AWS) on app startup.
-- **Idempotency**: Re-running `./up` or `./dev` converges; does not duplicate resources. `terraform apply` is safe to repeat.
-- **Force-delete flags** (AWS): All destroyable resources (`skip_final_snapshot=true` on RDS, `force_delete=true` on ECR/S3) ensure `./down` completes cleanly.
-
-## Dependencies
-
-### Root package.json
-- **@playwright/test** (^1.43.1): E2E browser automation testing framework
-
-### App package.json
-- **next** (^15.3.0): React framework with App Router
-- **react** (^19.0.0), **react-dom** (^19.0.0): UI library
-- **pg** (^8.11.3): PostgreSQL client
-- **@aws-sdk/client-cognito-identity-provider** (^3.540.0): AWS Cognito SDK
-- **jose** (^5.2.3): JWT token handling
-- **cookie** (^0.6.0): Cookie parsing/serialization
-- **@opentelemetry/*** : Observability instrumentation (prepared for V2 integration)
-
-### Acceptance package.json
-- **@playwright/test** (^1.43.1): Test framework
-- **@aws-sdk/client-secrets-manager** (^3.540.0): Secrets retrieval for live deployments
-- **@aws-sdk/client-cogn
+- **Idempotency**: Re-running `./up` or `./dev` converges; does
