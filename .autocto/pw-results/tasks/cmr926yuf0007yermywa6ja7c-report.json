@@ -4,7 +4,7 @@
       "/opt/homebrew/Cellar/node/24.6.0/bin/node",
       "/Users/howardkitto/Projects/Intentional/enterprise-stack/node_modules/.bin/playwright",
       "test",
-      "e2e/tasks/task-02-apply-white-font-color-to-header.spec.ts",
+      "e2e/tasks/task-03-add-horizontal-gradient-background-to-header.spec.ts",
       "--reporter=json",
       "--output=/Users/howardkitto/Projects/Intentional/enterprise-stack/.autocto/pw-results/tasks"
     ],
@@ -61,20 +61,20 @@
   },
   "suites": [
     {
-      "title": "tasks/task-02-apply-white-font-color-to-header.spec.ts",
-      "file": "tasks/task-02-apply-white-font-color-to-header.spec.ts",
+      "title": "tasks/task-03-add-horizontal-gradient-background-to-header.spec.ts",
+      "file": "tasks/task-03-add-horizontal-gradient-background-to-header.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Task 02: Apply white font color to header",
-          "file": "tasks/task-02-apply-white-font-color-to-header.spec.ts",
+          "title": "Task 03: Add horizontal gradient background to header",
+          "file": "tasks/task-03-add-horizontal-gradient-background-to-header.spec.ts",
           "line": 5,
           "column": 6,
           "specs": [
             {
-              "title": "File app/src/app/globals.css contains a CSS rule for .site-header or .site-title with color property set to white",
+              "title": "File app/src/app/globals.css contains a background or background-image property with linear-gradient for .site-header",
               "ok": true,
               "tags": [],
               "tests": [
@@ -94,7 +94,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-07-06T10:14:03.907Z",
+                      "startTime": "2026-07-06T10:16:01.864Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -102,13 +102,47 @@
                   "status": "expected"
                 }
               ],
-              "id": "ba6e0cfa9a9bab92738a-ece0f3a7e95407e3baa6",
-              "file": "tasks/task-02-apply-white-font-color-to-header.spec.ts",
+              "id": "43b3dc08cbb3e73f340b-6b9d939a7f943d86137a",
+              "file": "tasks/task-03-add-horizontal-gradient-background-to-header.spec.ts",
               "line": 8,
               "column": 7
             },
             {
-              "title": "Running grep command returns at least one match in a header-related selector",
+              "title": "The gradient definition includes both black (black, #000, or #000000) and a navy blue color (e.g., #001f3f, #000080, or similar dark blue)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-06T10:16:01.883Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "43b3dc08cbb3e73f340b-560a90003432bcf8d40e",
+              "file": "tasks/task-03-add-horizontal-gradient-background-to-header.spec.ts",
+              "line": 29,
+              "column": 7
+            },
+            {
+              "title": "Running `grep -i 'linear-gradient' app/src/app/globals.css` returns at least one match in a header-related CSS rule",
               "ok": true,
               "tags": [],
               "tests": [
@@ -128,7 +162,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-07-06T10:14:03.926Z",
+                      "startTime": "2026-07-06T10:16:01.887Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -136,9 +170,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "ba6e0cfa9a9bab92738a-145f81b4966dcd71c7de",
-              "file": "tasks/task-02-apply-white-font-color-to-header.spec.ts",
-              "line": 29,
+              "id": "43b3dc08cbb3e73f340b-cbd87d47cf72857c9838",
+              "file": "tasks/task-03-add-horizontal-gradient-background-to-header.spec.ts",
+              "line": 62,
               "column": 7
             }
           ]
@@ -148,9 +182,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-07-06T10:14:03.709Z",
-    "duration": 226.085,
-    "expected": 2,
+    "startTime": "2026-07-06T10:16:01.668Z",
+    "duration": 227.68099999999998,
+    "expected": 3,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

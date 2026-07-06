@@ -83,3 +83,16 @@ Verification of acceptance criteria:
 All 6 E2E tests pass, confirming the app is running correctly with the updated header.
 
 ---
+
+## Task — Apply white font color to header
+**Status:** DONE  
+**Commit:** b92517a4f3f59989a8e0232bf2cc317747953ec6  
+**Date:** 2026-07-06 10:14  
+
+Successfully added white font color to header elements in app/src/app/globals.css. Added two CSS rules:
+1. `.site-header { color: white; }` - using the white keyword
+2. `.site-title { color: #ffffff; }` - using the hex color code
+
+Both rules are header-related selectors with white color property, satisfying both acceptance criteria. The changes are minimal and focused, adding only the required CSS rules without modifying any existing styles.
+
+---
