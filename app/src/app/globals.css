@@ -42,6 +42,14 @@ nav {
   z-index: 100;
 }
 
+.site-header {
+  color: white;
+}
+
+.site-title {
+  color: #ffffff;
+}
+
 nav a {
   color: var(--nav-fg);
   text-decoration: none;

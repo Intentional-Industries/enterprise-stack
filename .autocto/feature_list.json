@@ -1,7 +1,7 @@
 {
   "autocto_commit": "",
   "run_id": "cmr9244gx0001yermvfjk5cv4",
-  "generated_at": "2026-07-06T10:10:13.105Z",
+  "generated_at": "2026-07-06T10:12:15.130Z",
   "features": [
     {
       "id": "cmr926yub0003yerm6svnnvsq",
@@ -20,10 +20,10 @@
       "affectedAreas": [
         "app/src/app/layout.tsx"
       ],
-      "passes": false,
-      "attempts": 0,
+      "passes": true,
+      "attempts": 1,
       "failureReason": null,
-      "commitSha": null
+      "commitSha": "d74714c262352da68276472728e97271fa25084f"
     },
     {
       "id": "cmr926yud0005yerm5fa0enl9",
