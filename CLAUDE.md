@@ -1,6 +1,6 @@
 ---
-autocto_commit: 6b09c5e1dad1f2e0e97098e0293be094112ac03b
-autocto_generated: 2026-07-06T09:15:16.801Z
+autocto_commit: f0ebfe445bea61b33d552e74d9ac5adede73f87b
+autocto_generated: 2026-07-06T10:09:41.885Z
 ---
 
 # CLAUDE.md
@@ -40,7 +40,8 @@ A production-grade Next.js 14 web application deployed on AWS using infrastructu
 ├── package.json            # Root package: E2E test dependencies (@playwright/test)
 ├── playwright.config.ts    # E2E test config: baseURL http://localhost:3000, testDir ./e2e
 ├── e2e/                    # Local E2E tests (run during development)
-│   └── smoke.spec.ts       # Basic smoke test: homepage loads with non-empty title
+│   ├── smoke.spec.ts       # Basic smoke test: homepage loads with non-empty title
+│   └── tasks/              # Evaluator-generated test files (immutable, verify task completion)
 ├── e2e.md                  # Documentation for E2E testing setup and usage
 ├── scripts/
 │   └── check-prereqs.sh    # Validates AWS CLI, Terraform, Docker, Node.js, jq versions
@@ -100,7 +101,9 @@ A production-grade Next.js 14 web application deployed on AWS using infrastructu
     ├── run-config.json      # AutoCTO harness: how to install/start this app (commit-keyed)
     ├── init.sh              # Startup script run before every generator task
     ├── feature_list.json    # Current run's task list (agent-facing source of truth)
-    └── progress.md          # Cumulative history of AutoCTO runs on this repo
+    ├── progress.md          # Cumulative history of AutoCTO runs on this repo
+    ├── handoff-*.json       # Per-task handoff artifacts (files changed, commands run, notes)
+    └── pw-results/          # Playwright test execution results (JSON reports, .last-run.json status)
 ```
 
 ## Entry Points & How It Starts
@@ -130,6 +133,7 @@ A production-grade Next.js 14 web application deployed on AWS using infrastructu
 - Run `npm run test:e2e` from repo root to execute Playwright tests against `http://localhost:3000`
 - Requires app to be running (via `./dev`)
 - Smoke test in `e2e/smoke.spec.ts` verifies homepage loads with non-empty title
+- Test files in `e2e/tasks/` are evaluator-generated (immutable) and verify task completion
 - See `e2e.md` for detailed testing documentation
 
 ### Next.js app (both modes)
@@ -181,7 +185,8 @@ A production-grade Next.js 14 web application deployed on AWS using infrastructu
   - E2E tests (`e2e/`) run locally against `http://localhost:3000` during development
   - Acceptance tests (`acceptance/`) run against live AWS deployment with real Cognito/RDS
 - **Test isolation**: E2E smoke test is minimal and doesn't require authentication; acceptance suite performs full user flows
-- **data-testid convention**: All interactive UI elements must have `data-testid` attributes for reliable test targeting
+- **data-testid convention**: All interactive UI elements should have `data-testid` attributes for reliable test targeting
+- **Evaluator-generated tests**: Files in `e2e/tasks/` are immutable verification tests created by the AutoCTO evaluator to validate task completion. Do not modify these files; fix implementation if tests fail.
 
 ### Shared conventions
 - **DB connection pooling**: `lib/db.ts` uses `pg.Pool` with max 10 (local) or 20 (AWS) connections. Connection string constructed from env vars (local) or Secrets Manager (AWS) on app startup.
@@ -205,34 +210,4 @@ A production-grade Next.js 14 web application deployed on AWS using infrastructu
 ### Acceptance package.json
 - **@playwright/test** (^1.43.1): Test framework
 - **@aws-sdk/client-secrets-manager** (^3.540.0): Secrets retrieval for live deployments
-- **@aws-sdk/client-cognito-identity-provider** (^3.540.0): Direct Cognito API calls for test user management
-
-## Known TODOs / Areas Flagged for Improvement
-
-- **V2 roadmap** (after V1 acceptance):
-  - SES email verification (replace auto-confirm)
-  - OpenTelemetry → Sentry/Grafana/Datadog
-  - PostHog analytics
-  - CI/CD pipeline (GitHub Actions, OPA policy gates, image scanning)
-  - WAF custom rules (rate limiting, geo-blocking)
-  - Automated restore verification (DR test)
-  - DSAR/erasure tooling (GDPR/CCPA)
-  - Multi-region DR (if mandated)
-- **Custom CloudFront domain**: V1 uses default `*.cloudfront.net`; V2 should add Route 53 + ACM certificate.
-- **Secrets rotation**: RDS secret auto-rotates (AWS-managed). App secrets in `/intentional/dev/external-services` need manual rotation strategy.
-- **Terraform state locking**: DynamoDB table created by `./up` bootstrap; `backend.tf` must be manually copied from `backend.tf.example` (not automated).
-- **Migration idempotency**: `migrate.js` re-runs all SQL files on every deploy; should track applied migrations (e.g., `migrations_log` table).
-- **Acceptance test retries**: Playwright config has `retries: 2`; may mask flaky infra (ECS cold starts).
-- **Hardcoded account ID**: `992382611473` in README; should be parameterized for multi-account use.
-- **cognito-local feature parity**: Not all Cognito operations supported; test against real AWS before shipping. See [feature support matrix](https://github.com/jagregory/cognito-local#feature-support).
-
-## Non-Obvious Developer Notes
-
-- **Session validation**: `lib/session.ts` does **not** verify JWT signature (trusts Cognito tokens implicitly). Production should validate with Cognito JWKS.
-- **ALB listens on HTTP:80 only** (AWS): TLS termination happens at CloudFront. ALB→Fargate traffic is unencrypted within VPC (acceptable for most compliance regimes; inter-AZ traffic stays on AWS backbone).
-- **Playwright tests expect live AWS** (acceptance suite): Tests call real Cognito `InitiateAuth`, real RDS via ALB. Cannot mock; requires fully deployed stack.
-- **E2E tests are local-only**: Unlike acceptance tests, E2E tests in `e2e/` directory run against local development server and don't require AWS credentials.
-- **S3 Object Lock (COMPLIANCE mode)** (AWS): Audit log bucket cannot be purged until retention expires. `./down --purge-state` may fail if objects exist; manual intervention required.
-- **Config rules** (AWS): AWS Config continuously evaluates compliance (e.g., S3 bucket encryption, RDS encryption). Violations logged but not enforced (no auto-remediation in V1).
-- **Local Cognito pool survives `./dev` restarts**: Data lives in `cognito-data` Docker volume; `docker compose down` (without `-v`) preserves users. `docker compose down -v` wipes everything, forcing `cognito:setup` to recreate the pool.
-- **Port collision (local)**: If something else owns `:3000`, Next.js auto-increments to `:3001`, `:3002`, etc. Update `NEXTAUTH_URL` in `.env.local` and `baseURL` in E2E Playwright config if needed.
+- **@aws-sdk/client-cogn

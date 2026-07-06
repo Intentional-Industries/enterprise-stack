@@ -21,7 +21,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <nav>
-          <Link href="/" className="brand">Intentional</Link>
+          <Link href="/" className="brand">Intentional Industries</Link>
           <Link href="/">Home</Link>
           {session ? (
             <Link href="/profile">Profile</Link>

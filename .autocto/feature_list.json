@@ -1,28 +1,24 @@
 {
   "autocto_commit": "",
-  "run_id": "cmr54w6250000uo0rajjvx0ps",
-  "generated_at": "2026-07-06T09:15:44.210Z",
+  "run_id": "cmr9244gx0001yermvfjk5cv4",
+  "generated_at": "2026-07-06T10:10:13.105Z",
   "features": [
     {
-      "id": "cmr908wjw000oyeyb6eo15m7d",
+      "id": "cmr926yub0003yerm6svnnvsq",
       "order": 1,
-      "category": "foundation",
-      "title": "Set up Playwright E2E testing",
-      "description": "Install and configure Playwright for end-to-end browser automation testing. This is required before any feature work can be verified.",
+      "category": "ui",
+      "title": "Update header text to 'Intentional Industries'",
+      "description": "Modify the header component in layout.tsx to display 'Intentional Industries' instead of 'Loop Harness'. The text must be exactly 'Intentional Industries' (case-sensitive) to match test expectations.",
       "acceptanceCriteria": [
-        "playwright.config.ts exists at repo root with baseURL set to http://localhost:3000",
-        "@playwright/test appears in package.json devDependencies",
-        "npx playwright install --with-deps chromium exits with code 0",
-        "A smoke test at e2e/smoke.spec.ts loads the app home page and asserts the page title is not empty",
-        "npx playwright test e2e/smoke.spec.ts --reporter=line exits with code 0"
+        "File app/src/app/layout.tsx contains the string 'Intentional Industries' in the header section",
+        "GET http://localhost:3001 returns HTML containing 'Intentional Industries' in the response body",
+        "The string 'Loop Harness' does not appear in app/src/app/layout.tsx header section"
       ],
       "dependsOn": [],
       "complexity": "LOW",
-      "estimatedSteps": 3,
+      "estimatedSteps": 2,
       "affectedAreas": [
-        "package.json",
-        "playwright.config.ts",
-        "e2e/"
+        "app/src/app/layout.tsx"
       ],
       "passes": false,
       "attempts": 0,
@@ -30,23 +26,22 @@
       "commitSha": null
     },
     {
-      "id": "cmr908wjc000eyeybbqu41yv5",
+      "id": "cmr926yud0005yerm5fa0enl9",
       "order": 2,
       "category": "ui",
-      "title": "Update header text to 'Intentional Industries'",
-      "description": "Locate the header component (likely in app/src/app/layout.tsx or a dedicated header component) and change the text content to 'Intentional Industries'. Ensure the text is visible and properly rendered.",
+      "title": "Apply white font color to header",
+      "description": "Update the CSS styles for the site header to use white (#ffffff or rgb(255,255,255)) font color. This should apply to the site-title class and any other text elements within the header.",
       "acceptanceCriteria": [
-        "Running `grep -r 'Intentional Industries' app/src/app/` finds the new header text in a layout or component file",
-        "The header text 'Intentional Industries' is present in the DOM when visiting http://localhost:3000 (can verify with curl or browser inspection)",
-        "No TypeScript compilation errors when running `cd app && npm run build`"
+        "File app/src/app/globals.css contains a CSS rule for .site-header or .site-title with color property set to white (white, #fff, #ffffff, or rgb(255,255,255))",
+        "Running `grep -E 'color:\\s*(white|#fff|#ffffff|rgb\\(255,\\s*255,\\s*255\\))' app/src/app/globals.css` returns at least one match in a header-related selector"
       ],
       "dependsOn": [
-        "cmr908wjw000oyeyb6eo15m7d"
+        "cmr926yub0003yerm6svnnvsq"
       ],
       "complexity": "LOW",
       "estimatedSteps": 2,
       "affectedAreas": [
-        "app/src/app/layout.tsx"
+        "app/src/app/globals.css"
       ],
       "passes": false,
       "attempts": 0,
@@ -54,75 +49,23 @@
       "commitSha": null
     },
     {
-      "id": "cmr908wjf000gyeyb07aek9lr",
+      "id": "cmr926yuf0007yermywa6ja7c",
       "order": 3,
       "category": "ui",
-      "title": "Apply white text color to header",
-      "description": "Add CSS styling to set the header text color to white (#ffffff or equivalent). This may involve updating app/src/app/globals.css, adding inline styles, or using Tailwind classes if the project uses Tailwind CSS.",
+      "title": "Add horizontal gradient background to header",
+      "description": "Apply a CSS background gradient to the site header that transitions horizontally from black (#000000) on the left to navy blue (#001f3f or similar) on the right. Use linear-gradient with appropriate direction (to right or 90deg).",
       "acceptanceCriteria": [
-        "The header element or its text wrapper has a CSS rule setting color to white (verify in app/src/app/globals.css or inline styles)",
-        "Visual inspection of the header shows white text (can be validated by checking computed styles in browser dev tools or screenshot comparison)",
-        "No CSS syntax errors when running `cd app && npm run build`"
+        "File app/src/app/globals.css contains a background or background-image property with linear-gradient for .site-header",
+        "The gradient definition includes both black (black, #000, or #000000) and a navy blue color (e.g., #001f3f, #000080, or similar dark blue)",
+        "Running `grep -i 'linear-gradient' app/src/app/globals.css` returns at least one match in a header-related CSS rule"
       ],
       "dependsOn": [
-        "cmr908wjc000eyeybbqu41yv5"
-      ],
-      "complexity": "LOW",
-      "estimatedSteps": 2,
-      "affectedAreas": [
-        "app/src/app/globals.css",
-        "app/src/app/layout.tsx"
-      ],
-      "passes": false,
-      "attempts": 0,
-      "failureReason": null,
-      "commitSha": null
-    },
-    {
-      "id": "cmr908wjh000iyeybx58525ep",
-      "order": 4,
-      "category": "ui",
-      "title": "Apply horizontal gradient background (black to navy blue)",
-      "description": "Add a CSS background gradient to the header element that transitions horizontally from black (#000000) on the left to navy blue (#000080 or similar professional navy shade like #001f3f) on the right. Use linear-gradient with appropriate color stops for a classy appearance.",
-      "acceptanceCriteria": [
-        "The header CSS includes a background property with linear-gradient from black to navy blue (e.g., `background: linear-gradient(to right, #000000, #001f3f)`)",
-        "Running `grep -E 'linear-gradient.*black|#000.*navy|#001f3f' app/src/app/globals.css` or similar finds the gradient rule",
-        "The gradient direction is horizontal (left to right, specified as 'to right' or '90deg')",
-        "No visual artifacts or broken styling when viewing http://localhost:3000"
-      ],
-      "dependsOn": [
-        "cmr908wjf000gyeyb07aek9lr"
-      ],
-      "complexity": "LOW",
-      "estimatedSteps": 2,
-      "affectedAreas": [
-        "app/src/app/globals.css",
-        "app/src/app/layout.tsx"
-      ],
-      "passes": false,
-      "attempts": 0,
-      "failureReason": null,
-      "commitSha": null
-    },
-    {
-      "id": "cmr908wjk000kyeyb8g2xbnkp",
-      "order": 5,
-      "category": "ui",
-      "title": "Verify header styling in local development",
-      "description": "Start the local development server using ./dev and visually confirm that the header displays 'Intentional Industries' in white text on a horizontal black-to-navy-blue gradient background. Ensure the styling looks professional and the gradient is smooth.",
-      "acceptanceCriteria": [
-        "Running `./dev` starts the application without errors",
-        "Visiting http://localhost:3000 (or auto-incremented port) displays the header with white text reading 'Intentional Industries'",
-        "The header background shows a smooth horizontal gradient from black to navy blue",
-        "The header styling is consistent across different viewport widths (responsive design maintained)"
-      ],
-      "dependsOn": [
-        "cmr908wjh000iyeybx58525ep"
+        "cmr926yud0005yerm5fa0enl9"
       ],
       "complexity": "LOW",
       "estimatedSteps": 3,
       "affectedAreas": [
-        "app/"
+        "app/src/app/globals.css"
       ],
       "passes": false,
       "attempts": 0,
@@ -130,26 +73,25 @@
       "commitSha": null
     },
     {
-      "id": "cmr908wjm000myeybcfrews9a",
-      "order": 6,
-      "category": "ui",
-      "title": "Ensure production build compatibility",
-      "description": "Run a production build of the Next.js application to ensure the header styling changes don't break the build process or cause runtime issues. Verify that the Docker image builds successfully with the new styling.",
+      "id": "cmr926yug0009yermpjnz3des",
+      "order": 4,
+      "category": "validation",
+      "title": "Verify header rendering with all changes",
+      "description": "Confirm that the header displays correctly with all three changes applied: 'Intentional Industries' text, white font, and gradient background. This task ensures the CSS specificity and element structure work together correctly.",
       "acceptanceCriteria": [
-        "Running `cd app && npm run build` completes successfully with exit code 0",
-        "The production build includes the header styling changes (verify .next/static output contains the CSS)",
-        "Running `docker build -t test-build app/` completes without errors",
-        "The built Docker image, when run, displays the correct header styling at http://localhost:3000"
+        "GET http://localhost:3001 returns 200 status code",
+        "The response HTML from http://localhost:3001 contains 'Intentional Industries' as visible text",
+        "Visual inspection of the page shows a gradient background on the header (developer can check computed styles)",
+        "No console errors appear when loading http://localhost:3001 (check browser dev tools or server logs)"
       ],
       "dependsOn": [
-        "cmr908wjk000kyeyb8g2xbnkp"
+        "cmr926yuf0007yermywa6ja7c"
       ],
-      "complexity": "MEDIUM",
-      "estimatedSteps": 4,
+      "complexity": "LOW",
+      "estimatedSteps": 2,
       "affectedAreas": [
-        "app/Dockerfile",
-        "app/next.config.ts",
-        "app/package.json"
+        "app/src/app/layout.tsx",
+        "app/src/app/globals.css"
       ],
       "passes": false,
       "attempts": 0,

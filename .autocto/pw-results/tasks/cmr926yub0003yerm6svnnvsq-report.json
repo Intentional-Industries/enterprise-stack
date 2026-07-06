@@ -4,7 +4,7 @@
       "/opt/homebrew/Cellar/node/24.6.0/bin/node",
       "/Users/howardkitto/Projects/Intentional/enterprise-stack/node_modules/.bin/playwright",
       "test",
-      "e2e/tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
+      "e2e/tasks/task-01-update-header-text-to-intentional-industries.spec.ts",
       "--reporter=json",
       "--output=/Users/howardkitto/Projects/Intentional/enterprise-stack/.autocto/pw-results/tasks"
     ],
@@ -61,20 +61,20 @@
   },
   "suites": [
     {
-      "title": "tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
-      "file": "tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
+      "title": "tasks/task-01-update-header-text-to-intentional-industries.spec.ts",
+      "file": "tasks/task-01-update-header-text-to-intentional-industries.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Task 01: Set up Playwright E2E testing",
-          "file": "tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
-          "line": 6,
+          "title": "Task 01: Update header text to Intentional Industries",
+          "file": "tasks/task-01-update-header-text-to-intentional-industries.spec.ts",
+          "line": 5,
           "column": 6,
           "specs": [
             {
-              "title": "playwright.config.ts exists at repo root with baseURL set to http://localhost:3000",
+              "title": "File app/src/app/layout.tsx contains the string Intentional Industries in the header section",
               "ok": true,
               "tags": [],
               "tests": [
@@ -94,7 +94,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-07-06T09:19:49.650Z",
+                      "startTime": "2026-07-06T10:12:14.444Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -102,49 +102,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "0db9f3b672117be171e9-f852049e83e653496a71",
-              "file": "tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
-              "line": 7,
+              "id": "cf2683cce4b567307531-570413ba0898815ed953",
+              "file": "tasks/task-01-update-header-text-to-intentional-industries.spec.ts",
+              "line": 6,
               "column": 7
             },
             {
-              "title": "@playwright/test appears in package.json devDependencies",
-              "ok": true,
-              "tags": [
-                "playwright/test"
-              ],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-07-06T09:19:49.668Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "0db9f3b672117be171e9-a288c378d165b15eb784",
-              "file": "tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
-              "line": 25,
-              "column": 7
-            },
-            {
-              "title": "npx playwright install --with-deps chromium exits with code 0",
+              "title": "GET http://localhost:3001 returns HTML containing Intentional Industries in the response body",
               "ok": true,
               "tags": [],
               "tests": [
@@ -159,12 +123,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 397,
+                      "duration": 508,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-07-06T09:19:49.672Z",
+                      "startTime": "2026-07-06T10:12:14.462Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -172,13 +136,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "0db9f3b672117be171e9-e69762ecd7d8b75ffa37",
-              "file": "tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
-              "line": 43,
+              "id": "cf2683cce4b567307531-d1352f0e54ebf8cdb1fa",
+              "file": "tasks/task-01-update-header-text-to-intentional-industries.spec.ts",
+              "line": 29,
               "column": 7
             },
             {
-              "title": "A smoke test at e2e/smoke.spec.ts loads the app home page and asserts the page title is not empty",
+              "title": "The string Loop Harness does not appear in app/src/app/layout.tsx header section",
               "ok": true,
               "tags": [],
               "tests": [
@@ -198,7 +162,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-07-06T09:19:50.072Z",
+                      "startTime": "2026-07-06T10:12:15.036Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -206,43 +170,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "0db9f3b672117be171e9-9326a034be698481c822",
-              "file": "tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
-              "line": 61,
-              "column": 7
-            },
-            {
-              "title": "npx playwright test e2e/smoke.spec.ts --reporter=line exits with code 0",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 998,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-07-06T09:19:50.077Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "0db9f3b672117be171e9-6827f7767d8e0a1c5102",
-              "file": "tasks/task-01-set-up-playwright-e2e-testing.spec.ts",
-              "line": 84,
+              "id": "cf2683cce4b567307531-1e8d84433c9d42ee47d0",
+              "file": "tasks/task-01-update-header-text-to-intentional-industries.spec.ts",
+              "line": 47,
               "column": 7
             }
           ]
@@ -252,9 +182,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-07-06T09:19:49.456Z",
-    "duration": 1628.7440000000001,
-    "expected": 5,
+    "startTime": "2026-07-06T10:12:14.243Z",
+    "duration": 821.482,
+    "expected": 3,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
