@@ -1,27 +1,28 @@
 {
-  "autocto_commit": "53684202365b34ae6b0a3182e3dd733402e7ed8a",
-  "run_id": "cmr3d6krb0000yexm99p051yd",
-  "generated_at": "2026-07-02T10:31:57.188Z",
+  "autocto_commit": "",
+  "run_id": "cmr54w6250000uo0rajjvx0ps",
+  "generated_at": "2026-07-06T09:15:44.210Z",
   "features": [
     {
-      "id": "cmr3d7ies0002yexmus148kwl",
+      "id": "cmr908wjw000oyeyb6eo15m7d",
       "order": 1,
-      "category": "ui",
-      "title": "Update header text in Next.js layout or landing page",
-      "description": "Locate the component responsible for rendering the header text (likely `app/src/app/layout.tsx` or `app/src/app/page.tsx`) and change the header text to 'Intentional Industries'. Ensure the change is visible in the UI and does not break existing functionality.",
+      "category": "foundation",
+      "title": "Set up Playwright E2E testing",
+      "description": "Install and configure Playwright for end-to-end browser automation testing. This is required before any feature work can be verified.",
       "acceptanceCriteria": [
-        "The text 'Intentional Industries' appears in the header of the application",
-        "Running `grep -r 'Intentional Industries' app/src/app/` returns at least one match",
-        "The application builds successfully with `cd app && npm run build` (exit code 0)",
-        "No TypeScript compilation errors when running `cd app && npx tsc --noEmit`",
-        "The layout remains structurally intact (no broken HTML or missing elements)"
+        "playwright.config.ts exists at repo root with baseURL set to http://localhost:3000",
+        "@playwright/test appears in package.json devDependencies",
+        "npx playwright install --with-deps chromium exits with code 0",
+        "A smoke test at e2e/smoke.spec.ts loads the app home page and asserts the page title is not empty",
+        "npx playwright test e2e/smoke.spec.ts --reporter=line exits with code 0"
       ],
       "dependsOn": [],
       "complexity": "LOW",
-      "estimatedSteps": 2,
+      "estimatedSteps": 3,
       "affectedAreas": [
-        "app/src/app/layout.tsx",
-        "app/src/app/page.tsx"
+        "package.json",
+        "playwright.config.ts",
+        "e2e/"
       ],
       "passes": false,
       "attempts": 0,
@@ -29,24 +30,23 @@
       "commitSha": null
     },
     {
-      "id": "cmr3d7ieu0004yexm71fd8dcq",
+      "id": "cmr908wjc000eyeybbqu41yv5",
       "order": 2,
-      "category": "build",
-      "title": "Rebuild Docker image with updated header text",
-      "description": "Build a new Docker image containing the header text change using the existing multi-stage Dockerfile. Tag the image appropriately for pushing to ECR. Verify the build completes without errors and the image contains the updated code.",
+      "category": "ui",
+      "title": "Update header text to 'Intentional Industries'",
+      "description": "Locate the header component (likely in app/src/app/layout.tsx or a dedicated header component) and change the text content to 'Intentional Industries'. Ensure the text is visible and properly rendered.",
       "acceptanceCriteria": [
-        "Running `docker build -t test-header-change:latest app/` completes with exit code 0",
-        "The Docker image is created and visible in `docker images` output",
-        "Starting a container from the image with `docker run -p 3000:3000 test-header-change:latest` serves the application",
-        "The build process completes in under 10 minutes"
+        "Running `grep -r 'Intentional Industries' app/src/app/` finds the new header text in a layout or component file",
+        "The header text 'Intentional Industries' is present in the DOM when visiting http://localhost:3000 (can verify with curl or browser inspection)",
+        "No TypeScript compilation errors when running `cd app && npm run build`"
       ],
       "dependsOn": [
-        "cmr3d7ies0002yexmus148kwl"
+        "cmr908wjw000oyeyb6eo15m7d"
       ],
       "complexity": "LOW",
       "estimatedSteps": 2,
       "affectedAreas": [
-        "app/Dockerfile"
+        "app/src/app/layout.tsx"
       ],
       "passes": false,
       "attempts": 0,
@@ -54,25 +54,74 @@
       "commitSha": null
     },
     {
-      "id": "cmr3d7iev0006yexm9b6ayk77",
+      "id": "cmr908wjf000gyeyb07aek9lr",
       "order": 3,
-      "category": "deployment",
-      "title": "Deploy updated application to AWS infrastructure",
-      "description": "Push the newly built Docker image to ECR and trigger a redeployment of the ECS service. This can be done by running the full `./up` script or manually pushing to ECR and updating the ECS task definition. Wait for the deployment to stabilize and the health checks to pass.",
+      "category": "ui",
+      "title": "Apply white text color to header",
+      "description": "Add CSS styling to set the header text color to white (#ffffff or equivalent). This may involve updating app/src/app/globals.css, adding inline styles, or using Tailwind classes if the project uses Tailwind CSS.",
       "acceptanceCriteria": [
-        "Running `./up` completes successfully with exit code 0",
-        "The ECS service shows 'RUNNING' status with desired count matching running count",
-        "The ALB target group health check returns 'healthy' status",
-        "CloudWatch logs for the ECS task show the application started without errors",
-        "The deployment completes within 15 minutes"
+        "The header element or its text wrapper has a CSS rule setting color to white (verify in app/src/app/globals.css or inline styles)",
+        "Visual inspection of the header shows white text (can be validated by checking computed styles in browser dev tools or screenshot comparison)",
+        "No CSS syntax errors when running `cd app && npm run build`"
       ],
       "dependsOn": [
-        "cmr3d7ieu0004yexm71fd8dcq"
+        "cmr908wjc000eyeybbqu41yv5"
       ],
-      "complexity": "MEDIUM",
-      "estimatedSteps": 4,
+      "complexity": "LOW",
+      "estimatedSteps": 2,
       "affectedAreas": [
-        "terraform/",
+        "app/src/app/globals.css",
+        "app/src/app/layout.tsx"
+      ],
+      "passes": false,
+      "attempts": 0,
+      "failureReason": null,
+      "commitSha": null
+    },
+    {
+      "id": "cmr908wjh000iyeybx58525ep",
+      "order": 4,
+      "category": "ui",
+      "title": "Apply horizontal gradient background (black to navy blue)",
+      "description": "Add a CSS background gradient to the header element that transitions horizontally from black (#000000) on the left to navy blue (#000080 or similar professional navy shade like #001f3f) on the right. Use linear-gradient with appropriate color stops for a classy appearance.",
+      "acceptanceCriteria": [
+        "The header CSS includes a background property with linear-gradient from black to navy blue (e.g., `background: linear-gradient(to right, #000000, #001f3f)`)",
+        "Running `grep -E 'linear-gradient.*black|#000.*navy|#001f3f' app/src/app/globals.css` or similar finds the gradient rule",
+        "The gradient direction is horizontal (left to right, specified as 'to right' or '90deg')",
+        "No visual artifacts or broken styling when viewing http://localhost:3000"
+      ],
+      "dependsOn": [
+        "cmr908wjf000gyeyb07aek9lr"
+      ],
+      "complexity": "LOW",
+      "estimatedSteps": 2,
+      "affectedAreas": [
+        "app/src/app/globals.css",
+        "app/src/app/layout.tsx"
+      ],
+      "passes": false,
+      "attempts": 0,
+      "failureReason": null,
+      "commitSha": null
+    },
+    {
+      "id": "cmr908wjk000kyeyb8g2xbnkp",
+      "order": 5,
+      "category": "ui",
+      "title": "Verify header styling in local development",
+      "description": "Start the local development server using ./dev and visually confirm that the header displays 'Intentional Industries' in white text on a horizontal black-to-navy-blue gradient background. Ensure the styling looks professional and the gradient is smooth.",
+      "acceptanceCriteria": [
+        "Running `./dev` starts the application without errors",
+        "Visiting http://localhost:3000 (or auto-incremented port) displays the header with white text reading 'Intentional Industries'",
+        "The header background shows a smooth horizontal gradient from black to navy blue",
+        "The header styling is consistent across different viewport widths (responsive design maintained)"
+      ],
+      "dependsOn": [
+        "cmr908wjh000iyeybx58525ep"
+      ],
+      "complexity": "LOW",
+      "estimatedSteps": 3,
+      "affectedAreas": [
         "app/"
       ],
       "passes": false,
@@ -81,52 +130,26 @@
       "commitSha": null
     },
     {
-      "id": "cmr3d7iew0008yexmkinqw9o5",
-      "order": 4,
-      "category": "verification",
-      "title": "Verify header text change in live deployment",
-      "description": "Access the deployed application via the CloudFront URL and verify that the header text now reads 'Intentional Industries'. Check both the homepage and any other pages that display the header. Capture a screenshot or use curl to verify the HTML contains the expected text.",
+      "id": "cmr908wjm000myeybcfrews9a",
+      "order": 6,
+      "category": "ui",
+      "title": "Ensure production build compatibility",
+      "description": "Run a production build of the Next.js application to ensure the header styling changes don't break the build process or cause runtime issues. Verify that the Docker image builds successfully with the new styling.",
       "acceptanceCriteria": [
-        "Running `curl -s $(terraform -chdir=terraform output -raw cloudfront_url) | grep 'Intentional Industries'` returns a match",
-        "Manually accessing the CloudFront URL in a browser shows 'Intentional Industries' in the header",
-        "The homepage (`/`) displays the header text correctly",
-        "The profile page (`/profile`) displays the same header text",
-        "No console errors appear in the browser developer tools"
+        "Running `cd app && npm run build` completes successfully with exit code 0",
+        "The production build includes the header styling changes (verify .next/static output contains the CSS)",
+        "Running `docker build -t test-build app/` completes without errors",
+        "The built Docker image, when run, displays the correct header styling at http://localhost:3000"
       ],
       "dependsOn": [
-        "cmr3d7iev0006yexm9b6ayk77"
+        "cmr908wjk000kyeyb8g2xbnkp"
       ],
-      "complexity": "LOW",
-      "estimatedSteps": 3,
+      "complexity": "MEDIUM",
+      "estimatedSteps": 4,
       "affectedAreas": [
-        "app/src/app/"
-      ],
-      "passes": false,
-      "attempts": 0,
-      "failureReason": null,
-      "commitSha": null
-    },
-    {
-      "id": "cmr3d7iey000ayexmp4tpldxr",
-      "order": 5,
-      "category": "testing",
-      "title": "Run acceptance test suite to ensure no regressions",
-      "description": "Execute the full Playwright acceptance test suite (`./test`) to verify that the header text change has not broken any existing functionality. All 5 tests (homepage, API, signup, signin, profile) should pass. If any tests fail due to the header change, update the test expectations accordingly.",
-      "acceptanceCriteria": [
-        "Running `./test` completes with exit code 0",
-        "All 5 tests in `acceptance/specs/v1-acceptance.spec.ts` pass",
-        "No new test failures are introduced by the header change",
-        "The test output shows 'All tests passed' or equivalent success message",
-        "Test screenshots in `acceptance/screenshots/` show the updated header text"
-      ],
-      "dependsOn": [
-        "cmr3d7iew0008yexmkinqw9o5"
-      ],
-      "complexity": "LOW",
-      "estimatedSteps": 2,
-      "affectedAreas": [
-        "acceptance/specs/v1-acceptance.spec.ts",
-        "acceptance/playwright.config.ts"
+        "app/Dockerfile",
+        "app/next.config.ts",
+        "app/package.json"
       ],
       "passes": false,
       "attempts": 0,
