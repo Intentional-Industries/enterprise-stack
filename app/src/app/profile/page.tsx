@@ -5,7 +5,7 @@ import { getSession } from '@/lib/session'
 export const dynamic = 'force-dynamic'
 
 export default async function ProfilePage() {
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const session = await getSession(cookieStore.toString())
 
   if (!session) {

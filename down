@@ -7,7 +7,7 @@ TERRAFORM_DIR="$ROOT_DIR/terraform"
 PROJECT="${PROJECT:-intentional}"
 ENVIRONMENT="${ENVIRONMENT:-dev}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
-AWS_PROFILE="${AWS_PROFILE:-intentional}"
+export AWS_PROFILE="${AWS_PROFILE:-intentional}"
 
 log() { echo "[$(date -u +%H:%M:%S)] $*"; }
 
@@ -26,7 +26,7 @@ terraform {
     bucket         = "${STATE_BUCKET}"
     key            = "${PROJECT}/${ENVIRONMENT}/terraform.tfstate"
     region         = "${AWS_REGION}"
-    dynamodb_table = "${LOCK_TABLE}"
+    use_lockfile   = true
     encrypt        = true
   }
 }
@@ -66,11 +66,13 @@ if [ "${1:-}" = "--purge-state" ]; then
   log "Purging state backend..."
   aws s3 rb "s3://${STATE_BUCKET}" --force --profile "$AWS_PROFILE" 2>/dev/null || \
     log "Warning: could not remove state bucket (may already be gone)"
+  # State locking now uses use_lockfile (S3-native); this only cleans up a
+  # DynamoDB lock table left over from environments bootstrapped before that change.
   aws dynamodb delete-table \
     --table-name "$LOCK_TABLE" \
     --profile "$AWS_PROFILE" \
     --region "$AWS_REGION" 2>/dev/null || \
-    log "Warning: could not remove lock table (may already be gone)"
+    log "Warning: could not remove lock table (may already be gone, or was never created)"
 fi
 
 log "Teardown complete. No resources remain."

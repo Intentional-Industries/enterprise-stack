@@ -6,14 +6,15 @@
 #   cat > terraform/backend.tf <<EOF
 #   terraform {
 #     backend "s3" {
-#       bucket         = "intentional-dev-tfstate-ACCOUNT_ID"
-#       key            = "intentional/dev/terraform.tfstate"
-#       region         = "us-east-1"
-#       encrypt        = true
-#       dynamodb_table = "intentional-dev-tfstate-lock"
+#       bucket       = "intentional-dev-tfstate-ACCOUNT_ID"
+#       key          = "intentional/dev/terraform.tfstate"
+#       region       = "us-east-1"
+#       encrypt      = true
+#       use_lockfile = true
 #     }
 #   }
 #   EOF
 #
-# The S3 bucket and DynamoDB table are created by scripts/bootstrap-state.sh
-# before terraform init is called.
+# The S3 bucket is created by ./up before terraform init is called. State
+# locking uses Terraform's native S3 lockfile (use_lockfile, Terraform >= 1.10)
+# rather than a DynamoDB table.

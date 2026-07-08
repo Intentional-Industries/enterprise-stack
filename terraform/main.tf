@@ -63,31 +63,31 @@ module "identity" {
 module "compute" {
   source = "./modules/compute"
 
-  project                 = var.project
-  environment             = var.environment
-  aws_region              = var.aws_region
-  vpc_id                  = module.network.vpc_id
-  public_subnet_ids       = module.network.public_subnet_ids
-  private_subnet_ids      = module.network.private_subnet_ids
-  alb_sg_id               = module.security.alb_sg_id
-  ecs_sg_id               = module.security.ecs_sg_id
-  kms_key_arn             = module.security.kms_key_arn
-  app_log_group_name      = module.observability.app_log_group_name
-  ecr_repository_url      = module.observability.ecr_repository_url
-  app_image               = var.app_image
-  ecs_cpu                 = var.ecs_cpu
-  ecs_memory              = var.ecs_memory
-  ecs_desired_count       = var.ecs_desired_count
-  db_secret_arn           = module.data.db_secret_arn
-  db_name                 = module.data.db_name
-  db_host                 = module.data.db_endpoint
-  db_port                 = module.data.db_port
-  session_secret_arn      = module.data.session_secret_arn
-  cognito_user_pool_id    = module.identity.user_pool_id
-  cognito_client_id       = module.identity.user_pool_client_id
-  cloudfront_secret       = random_password.cloudfront_secret.result
-  account_id              = data.aws_caller_identity.current.account_id
-  user_pool_arn           = module.identity.user_pool_arn
+  project              = var.project
+  environment          = var.environment
+  aws_region           = var.aws_region
+  vpc_id               = module.network.vpc_id
+  public_subnet_ids    = module.network.public_subnet_ids
+  private_subnet_ids   = module.network.private_subnet_ids
+  alb_sg_id            = module.security.alb_sg_id
+  ecs_sg_id            = module.security.ecs_sg_id
+  kms_key_arn          = module.security.kms_key_arn
+  app_log_group_name   = module.observability.app_log_group_name
+  ecr_repository_url   = module.observability.ecr_repository_url
+  app_image            = var.app_image
+  ecs_cpu              = var.ecs_cpu
+  ecs_memory           = var.ecs_memory
+  ecs_desired_count    = var.ecs_desired_count
+  db_secret_arn        = module.data.db_secret_arn
+  db_name              = module.data.db_name
+  db_host              = module.data.db_endpoint
+  db_port              = module.data.db_port
+  session_secret_arn   = module.data.session_secret_arn
+  cognito_user_pool_id = module.identity.user_pool_id
+  cognito_client_id    = module.identity.user_pool_client_id
+  cloudfront_secret    = random_password.cloudfront_secret.result
+  account_id           = data.aws_caller_identity.current.account_id
+  user_pool_arn        = module.identity.user_pool_arn
 }
 
 module "edge" {
